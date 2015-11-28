@@ -23,7 +23,23 @@ var gems = [
 	canPurchase: true,
 	specification: "This diamond is so fine lil wayne would wear it.",
 	soldOut: false,
+	reviews: [
+		{
+		stars: 1,
+		author: "troll@trollphase.com",
+		body: "lol swag yolo. bunny ipsum."
+		},
+		{
+		stars: 4,
+		author: "gang@trollphase.com",
+		body: "gangsta."
+		}
+	],
 	images: [
+		{
+			full: 'images/pic4.jpg',
+			thumb: 'images/thumb4.jpg'
+		},
 		{
 			full: 'images/pic1.jpg',
 			thumb: 'images/thumb1.jpg'
@@ -41,6 +57,18 @@ var gems = [
 	canPurchase: true,
 	specification: "Shiny.",
 	soldOut: false,
+	reviews: [
+		{
+		stars: 1,
+		author: "troll@trollphase.com",
+		body: "ef kielbasa shoulder beef t-bone porchetta tri-tip brisket andouille. Sirloin venison doner fatback, turducken pork loin meatball rump ball tip filet mignon chicken capicola. Fatback landjaeger pig, spare ribs strip steak shank tri-tip short ribs andouille leberkas chuck swine ground round. Turducken."
+		},
+		{
+		stars: 4,
+		author: "gang@trollphase.com",
+		body: "K belly pork chop pork shankle capicola."
+		}
+	],
 	images: [
 		{
 			full: 'images/pic2.jpg',
@@ -49,11 +77,26 @@ var gems = [
 		{
 			full: 'images/pic1.jpg',
 			thumb: 'images/thumb1.jpg'
+		},
+		{
+			full: 'images/pic3.jpg',
+			thumb: 'images/thumb3.jpg'
 		}
 	]
 }
 
 ]
+
+app.controller("ImageController", function(){
+	this.selected = 0;
+	this.selectImage = function(setImage) {
+		this.selected = setImage;
+	};
+	this.isSelected = function(checkImage) {
+		return this.selected === checkImage;
+	};
+	
+});
 
 app.controller("PanelController", function(){
 	this.tab = 1;
@@ -67,7 +110,14 @@ app.controller("PanelController", function(){
 	}
 });
 
-
+app.controller("ReviewController", function(){
+	this.review = {};
+	this.addReview = function(product) {
+		this.review.createdOn = Date.now();
+		product.reviews.push(this.review);
+		this.review = {};
+	}
+});
 
 })();</script>
 </head>
@@ -78,10 +128,19 @@ app.controller("PanelController", function(){
 		<div ng-show="!store.product.soldOut">
 		<h1> {{product.name | uppercase}} </h1>
 		<em class="pull-right"> {{product.price | currency}} </em>
-		<img ng-src="{{product.images[0].full}}"/>
+		<div ng-controller="ImageController as images">
+		<img ng-src="{{product.images[images.selected].full}}"/>
+		</br>
+		<ul class="clearfix">
+			<li class=" pull-left" ng-repeat="image in product.images" style="list-style-type: none;">
+				<a href="" ng-click="images.selectImage($index)"><img  ng-src="{{image.thumb}}"/></a>
+			</li>
+		</ul>
+		</div>
+		</br>
 		<section ng-controller="PanelController as panel">
 			<ul class="nav nav-pills">
-				<li ng-class="{ active: panel.isSelected(1) }"> 
+				<li ng-class="{ active: panel.tab == 1 }"> 
 					<a href="" ng-click="panel.selectTab(1)">Description</a> </li>
 				<li ng-class="{ active: panel.isSelected(2) }"> 
 					<a href="" ng-click="panel.selectTab(2)">Specifications</a> </li>
@@ -99,7 +158,27 @@ app.controller("PanelController", function(){
 		</div>
 		<div class="panel" ng-show="panel.isSelected(3)">
 			<h4>Reviews<h4>
-			<blockquote>None yet.</blockquote>
+			<blockquote ng-repeat="review in product.reviews">
+				<b>Stars: {{review.stars}}</b>
+				{{review.body}}
+				<cite></br> by: {{review.author}} </cite><cite ng-show="review.createdOn"> on  </cite><cite>{{review.createdOn | date}}</cite>
+			</blockquote>
+			<form name="reviewForm" ng-controller="ReviewController as reviewCtrl"
+			ng-submit="reviewForm.$valid && reviewCtrl.addReview(product)" novalidate>
+			<blockquote>
+				<b>Stars: {{reviewCtrl.review.stars}}</b>
+				{{reviewCtrl.review.body}}
+				<cite></br> by: {{reviewCtrl.review.author}} </cite>
+			</blockquote>
+				<h3>Write a review</h3></br>
+				<select required class="form-control" title="Stars" ng-options="stars for stars in [5,4,3,2,1]" ng-model="reviewCtrl.review.stars">
+					<option value="">Rate The Product</option>
+				</select></br>
+				<textarea placeholder="Write a review" class="form-control" ng-model="reviewCtrl.review.body" required></textarea></br>
+				<label>by: </label>
+				<input placeholder="email" class="form-control" ng-model="reviewCtrl.review.author" type="email" required /></br>
+				<div> reviewForm is  {{reviewForm.$valid}} </div>
+				<input class="btn btn-primary" type="submit" value="Submit" />
 		</div>
 		</section>
 		<button class="btn btn-success" ng-show="product.canPurchase"> Add to Cart </button>
