@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="store">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" media="screen">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="style/style.css" rel="stylesheet" type="text/css" />
+	<script src="js/angular.min.js"></script>
+	<script>(function(){
+	var app = angular.module('store', []);
+
+	app.controller("StoreController", function(){
+		this.products = gems;
+		
+	});
+
+var gems = [
+{
+	name: 'DudeGem',
+	price: 2,
+	description: "Shank leberkas sausage short loin cupim. Salami turkey jerky capicola short loin porchetta. Picanha beef ribs drumstick doner filet mignon salami, venison prosciutto andouille. Short loin meatloaf tail, shank ham hock spare ribs ball tip pork loin ground round picanha corned beef turducken shoulder beef short ribs. Jowl shoulder bacon alcatra short ribs short loin bresaola. Short loin hamburger drumstick kevin, ground round biltong chuck cupim spare ribs pancetta porchetta cow salami.",
+	canPurchase: true,
+	specification: "This diamond is so fine lil wayne would wear it.",
+	soldOut: false,
+	images: [
+		{
+			full: 'images/pic1.jpg',
+			thumb: 'images/thumb1.jpg'
+		},
+		{
+			full: 'images/pic2.jpg',
+			thumb: 'images/thumb2.jpg'
+		}
+	]
+},
+{
+	name: 'DeGem',
+	price: 9992.95,
+	description: "Bacon ipsum dolor amet corned beef kielbasa shoulder beef t-bone porchetta tri-tip brisket andouille. Sirloin venison doner fatback, turducken pork loin meatball rump ball tip filet mignon chicken capicola. Fatback landjaeger pig, spare ribs strip steak shank tri-tip short ribs andouille leberkas chuck swine ground round. Turducken pork chop pig cow. Salami chicken jowl shank tenderloin. Pastrami drumstick kevin, frankfurter salami tongue ham hock strip steak cow shank meatloaf venison shoulder doner t-bone. Kevin flank cupim ham hock picanha shoulder bacon turkey jerky porchetta pork belly pork chop pork shankle capicola.",
+	canPurchase: true,
+	specification: "Shiny.",
+	soldOut: false,
+	images: [
+		{
+			full: 'images/pic2.jpg',
+			thumb: 'images/thumb2.jpg'
+		},
+		{
+			full: 'images/pic1.jpg',
+			thumb: 'images/thumb1.jpg'
+		}
+	]
+}
+
+]
+
+app.controller("PanelController", function(){
+	this.tab = 1;
+	
+	this.selectTab = function(setTab) {
+		this.tab = setTab;
+		
+	this.isSelected = function(checkTab) {
+		return this.tab == checkTab;
+	}
+	}
+});
+
+
+
+})();</script>
+</head>
+<body>
+	<div ng-controller="StoreController as store">
+		<ul class="list-group">
+		<li class="list-group-item" ng-repeat="product in store.products | limitTo:10">
+		<div ng-show="!store.product.soldOut">
+		<h1> {{product.name | uppercase}} </h1>
+		<em class="pull-right"> {{product.price | currency}} </em>
+		<img ng-src="{{product.images[0].full}}"/>
+		<section ng-controller="PanelController as panel">
+			<ul class="nav nav-pills">
+				<li ng-class="{ active: panel.isSelected(1) }"> 
+					<a href="" ng-click="panel.selectTab(1)">Description</a> </li>
+				<li ng-class="{ active: panel.isSelected(2) }"> 
+					<a href="" ng-click="panel.selectTab(2)">Specifications</a> </li>
+				<li ng-class="{ active: panel.isSelected(3) }"> 
+					<a href="" ng-click="panel.selectTab(3)">Reviews</a> </li>
+			</ul>
+
+		<div class="panel" ng-show="panel.tab == 1">
+			<h4>Description<h4>
+			<blockquote> {{product.description}} </blockquote>
+		</div>
+		<div class="panel" ng-show="panel.isSelected(2)">
+			<h4>Specifications<h4>
+			<blockquote> {{product.specification}} </blockquote>
+		</div>
+		<div class="panel" ng-show="panel.isSelected(3)">
+			<h4>Reviews<h4>
+			<blockquote>None yet.</blockquote>
+		</div>
+		</section>
+		<button class="btn btn-success" ng-show="product.canPurchase"> Add to Cart </button>
+		</div>
+		</li>
+		</ul>
+
+	</div>
+</body>
+</html>
